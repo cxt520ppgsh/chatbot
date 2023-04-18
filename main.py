@@ -32,6 +32,7 @@ def askChatGPT(messages):
             ans = r.choices[0].delta['content']
             total_ans += ans
             print(ans, end='')
+    print(ans, end='')
     return total_ans
 
 
