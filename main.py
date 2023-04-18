@@ -1,24 +1,60 @@
+import logging
+
 import openai
 import json
 
+import constant
 
-def start():
-    # 目前需要设置代理才可以访问 api
-    # os.environ["HTTP_PROXY"] = "自己的代理地址"
-    # os.environ["HTTPS_PROXY"] = "自己的代理地址"
+ROLE = ''
 
-    openai.api_key = "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"
 
-    q = "用python实现：提示手动输入3个不同的3位数区间，输入结束后计算这3个区间的交集，并输出结果区间"
-    rsp = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "一个有10年Python开发经验的资深算法工程师"},
-            {"role": "user", "content": q}
-        ]
-    )
-    print(rsp.get("choices")[0]["message"]["content"])
+def set_config():
+    openai.api_key = constant.API_KEY
+
+
+def set_role(role):
+    global ROLE
+    ROLE = role
+
+
+def askChatGPT(messages):
+    openai.api_key = constant.API_KEY
+    MODEL = "gpt-3.5-turbo"
+    response = openai.ChatCompletion.create(
+        model=MODEL,
+        messages=messages,
+        temperature=1,
+        stream=True)
+    total_ans = ''
+    print('ChatGPT：', end='')
+    for r in response:
+        if 'content' in r.choices[0].delta:
+            ans = r.choices[0].delta['content']
+            total_ans += ans
+            print(ans, end='')
+    return total_ans
+
+
+def main():
+    messages = [{"role": "user", "content": ROLE}]
+    while 1:
+        try:
+            text = input('你：')
+            if text == 'quit':
+                break
+
+            d = {"role": "user", "content": text}
+            messages.append(d)
+
+            text = askChatGPT(messages)
+            d = {"role": "assistant", "content": text}
+            logging.debug('ChatGPT：' + text)
+            messages.append(d)
+        except:
+            messages.pop()
+            print('ChatGPT Stop\n')
 
 
 if __name__ == '__main__':
-    start()
+    set_role('')
+    main()
