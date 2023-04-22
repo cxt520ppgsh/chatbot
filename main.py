@@ -7,8 +7,7 @@ import constant
 
 ROLE = '你只是一个打工仔'
 messages = [{"role": "system", "content": ROLE}]
-openai.api_key = constant.API_KEY
-MODEL = "gpt-3.5-turbo"
+openai.api_key = constant.CHAT_API_KEY
 
 
 def set_role(role):
@@ -18,12 +17,11 @@ def set_role(role):
 
 def ask_chat_gpt_with_stream(text):
     messages.append({"role": "user", "content": text})
-    openai.api_key = constant.API_KEY
-    MODEL = "gpt-3.5-turbo"
+    openai.api_key = constant.CHAT_API_KEY
     response = openai.ChatCompletion.create(
-        model=MODEL,
+        model=constant.CHAT_MODEL,
         messages=messages,
-        temperature=1,
+        temperature=constant.CHAT_TEMPERATURE,
         stream=True)
     total_ans = ''
     print('ChatGPT：', end='')
@@ -40,7 +38,7 @@ def ask_chat_gpt_with_stream(text):
 def ask_chat_gpt_not_stream(text):
     messages.append({"role": "user", "content": text})
     response = openai.ChatCompletion.create(
-        model=MODEL,
+        model=constant.CHAT_MODEL,
         messages=messages,
         temperature=1,
         stream=False)
