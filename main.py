@@ -6,10 +6,8 @@ import json
 import constant
 
 ROLE = ''
-
-
-def set_config():
-    openai.api_key = constant.API_KEY
+messages = [{"role": "user", "content": ROLE}]
+openai.api_key = constant.API_KEY
 
 
 def set_role(role):
@@ -17,7 +15,8 @@ def set_role(role):
     ROLE = role
 
 
-def askChatGPT(messages):
+def ask_chat_GPT(text):
+    messages.append({"role": "user", "content": text})
     openai.api_key = constant.API_KEY
     MODEL = "gpt-3.5-turbo"
     response = openai.ChatCompletion.create(
@@ -33,29 +32,29 @@ def askChatGPT(messages):
             total_ans += ans
             print(ans, end='')
     print("")
+    messages.append({"role": "assistant", "content": total_ans})
     return total_ans
 
 
-def main():
+def start_new():
+    global messages
     messages = [{"role": "user", "content": ROLE}]
+
+
+def test_talk():
     while 1:
         try:
             text = input('你：')
             if text == 'quit':
                 break
-
-            d = {"role": "user", "content": text}
-            messages.append(d)
-
-            text = askChatGPT(messages)
-            d = {"role": "assistant", "content": text}
+            text = ask_chat_GPT(messages)
             logging.debug('ChatGPT：' + text)
-            messages.append(d)
         except:
             messages.pop()
             print('ChatGPT Stop\n')
 
 
 if __name__ == '__main__':
-    set_role('')
-    main()
+    set_role('一个傲娇的二次元少女')
+    start_new()
+    test_talk()
